@@ -46,7 +46,7 @@ storyImage: {
   width: 60,
   height: 60,
   borderRadius: 30,  
-  borderWidth: 2,
+  borderWidth: 3,
   borderColor: '#C23A59',
 },
 

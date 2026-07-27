@@ -6,14 +6,24 @@ import BabarProfile from "../assets/babar-profile.jpg";
 import ShaheenProfile from "../assets/shaheen-profile.jpg";
 import SahibzadaProfile from "../assets/sahibzada-profile.jpg";
 import NaseemProfile from "../assets/naseem-profile.jpg";
+import AliProfile from "../assets/ali.png";
+import AhmedProfile from "../assets/ahmed.png";
+import ArsalProfile from "../assets/arsal.jpg";
+import ArslanProfile from "../assets/arslan.jpg";
+import AliyanProfile from "../assets/aliyan.jpg";
+
+
+
+
+
 
 
 export const storiesData = [
-  { id: '1', username: 'Ali' },
-  { id: '2', username: 'Ahmed' },
-  { id: '3', username: 'Arsal' },
-  { id: '4', username: 'Arslan' },
-  { id: '5', username: 'Aliyan' },
+  { id: '1', username: 'Ali' ,profilePic : AliProfile },
+  { id: '2', username: 'Ahmed' , profilePic : AhmedProfile},
+  { id: '3', username: 'Arsal' , profilePic : ArsalProfile},
+  { id: '4', username: 'Arslan' , profilePic : ArslanProfile},
+  { id: '5', username: 'Aliyan' , profilePic : AliyanProfile},
   { id: '6', username: 'Babar' },
   { id: '7', username: 'Hamza' },
   { id: '8', username: 'Umer' },
