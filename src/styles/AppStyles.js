@@ -37,7 +37,7 @@ iconsContainer : {
   marginTop : 15,
   flexDirection : "row",
   marginRight : 10,
-  gap : 10,
+  gap : 16,
   paddingRight : 5,
 },
 
