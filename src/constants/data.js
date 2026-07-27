@@ -13,11 +13,6 @@ import ArslanProfile from "../assets/arslan.jpg";
 import AliyanProfile from "../assets/aliyan.jpg";
 
 
-
-
-
-
-
 export const storiesData = [
   { id: '1', username: 'Ali' ,profilePic : AliProfile },
   { id: '2', username: 'Ahmed' , profilePic : AhmedProfile},
