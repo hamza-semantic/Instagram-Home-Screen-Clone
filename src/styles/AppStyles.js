@@ -55,6 +55,7 @@ storyContainer : {
   marginRight : 7,
   marginLeft : 5,
   height : 100,
+  marginBottom : 10,
 },
 
 
@@ -111,6 +112,8 @@ captionText: {
   paddingHorizontal: 10,
   paddingBottom: 10,
 },
+
+
 
 
 

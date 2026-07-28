@@ -23,9 +23,9 @@ function Posts({ navigation }) {
             </Text>
           </View>
 
-          <TouchableOpacity onPress={() => navigation.navigate('PostDetails')}>
+          {/* <TouchableOpacity onPress={() => navigation.navigate('PostDetails')}> */}
             <Image source={item.postImage} style={styles.postImage} />
-          </TouchableOpacity>
+          {/* </TouchableOpacity> */}
 
           <View style={styles.actionsRow}>
 

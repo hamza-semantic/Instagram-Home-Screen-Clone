@@ -11,6 +11,11 @@ import AhmedProfile from "../assets/ahmed.png";
 import ArsalProfile from "../assets/arsal.jpg";
 import ArslanProfile from "../assets/arslan.jpg";
 import AliyanProfile from "../assets/aliyan.jpg";
+import BabaProfile from "../assets/babar.jpg";
+import HamzaProfile from "../assets/hamza.jpg";
+import UmerProfile from "../assets/umer.jpg";
+import YasirProfile from "../assets/yasir.png";
+import FaheemProfile from "../assets/faheem.jpg";
 
 
 export const storiesData = [
@@ -19,11 +24,11 @@ export const storiesData = [
   { id: '3', username: 'Arsal' , profilePic : ArsalProfile},
   { id: '4', username: 'Arslan' , profilePic : ArslanProfile},
   { id: '5', username: 'Aliyan' , profilePic : AliyanProfile},
-  { id: '6', username: 'Babar' },
-  { id: '7', username: 'Hamza' },
-  { id: '8', username: 'Umer' },
-  { id: '9', username: 'Yasir' },
-  { id: '10', username: 'Faheem' },
+  { id: '6', username: 'Babar' , profilePic : BabaProfile},
+  { id: '7', username: 'Hamza' , profilePic : HamzaProfile},
+  { id: '8', username: 'Umer' , profilePic : UmerProfile},
+  { id: '9', username: 'Yasir' , profilePic : YasirProfile},
+  { id: '10', username: 'Faheem', profilePic : FaheemProfile },
 ];
 
 export const postData = [

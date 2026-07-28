@@ -1,15 +1,17 @@
 import React, { useContext } from 'react';
 import { View, Text, Image, Pressable } from 'react-native';
 import { ThemeContext } from '../context/ThemeContext';
+import { AuthContext } from '../context/AuthContext';
 import PersonalImage from "../assets/personal-profile.png";
 
 
 function ProfileScreen() {
   const { isDarkMode } = useContext(ThemeContext);
+  const { logout } = useContext(AuthContext);
 
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: isDarkMode ? '#000' : '#fff' }}>
-      <Text style={{ color: isDarkMode ? '#fff' : '#000' , fontWeight : "bold" }}>My Profile</Text>
+      <Text style={{ color: isDarkMode ? '#fff' : '#000', fontWeight: "bold" }}>My Profile</Text>
 
       <Image
         source={PersonalImage}
@@ -17,7 +19,7 @@ function ProfileScreen() {
       />
 
       <Pressable
-        onPress={() => console.log('Edit Profile pressed')}
+        onPress={() => logout()}
         style={{
           backgroundColor: '#E1306C',
           paddingVertical: 10,
@@ -26,7 +28,7 @@ function ProfileScreen() {
           marginTop: 15,
         }}
       >
-        <Text style={{ color: 'white', fontWeight: 'bold' }}>Edit Profile</Text>
+        <Text style={{ color: 'white', fontWeight: 'bold' }}>Logout</Text>
       </Pressable>
     </View>
   );
