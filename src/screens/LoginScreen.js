@@ -1,14 +1,24 @@
 import React from "react";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { View, Text, StyleSheet, Pressable, TextInput } from "react-native";
 import { useState } from "react";
-import { useContext } from "react";
-import { AuthContext } from "../context/AuthContext";
+// import { useContext } from "react";
+// import { AuthContext } from "../context/AuthContext";
+import { useDispatch } from 'react-redux';
+import { login } from '../redux/authSlice';
 
 const LoginScreen = () => {
-  const [email , setEmail] = useState('');
+
   const [username , setUsername] = useState('');
+  const [email , setEmail] = useState('');
   const [password , setPassword] = useState('');
-  const { login } = useContext(AuthContext);
+  // const { login } = useContext(AuthContext);
+  const dispatch = useDispatch();
+
+  const handleLogin = async () => {
+  dispatch(login({username , email , password}))
+  await AsyncStorage.setItem('user', JSON.stringify({username, email, password}));
+}
   
   return (
     <View style={styles.loginContainer}>
@@ -38,7 +48,9 @@ const LoginScreen = () => {
         />
 
         <Pressable style={styles.loginButtonContainer}
-        onPress ={() => login({ username, email, password })}
+        // onPress ={() => login({ username, email, password })}
+        // onPress={() => dispatch(login({ username, email, password }))}
+        onPress = {handleLogin}
         >
           <Text style={styles.loginButtonText}>Log In</Text>
         </Pressable>
@@ -71,6 +83,7 @@ const styles = StyleSheet.create({
     fontSize: 36,
     fontWeight: "bold",
     marginBottom: 40,
+    color : "#9b0f0f"
   },
 
   formContainer: {
@@ -81,7 +94,7 @@ const styles = StyleSheet.create({
     width: "100%",
     borderWidth: 1,
     borderColor: "#dbdbdb",
-    borderRadius: 5,
+    borderRadius: 30,
     padding: 10,
     marginBottom: 12,
     backgroundColor: "#fafafa",
@@ -90,9 +103,9 @@ const styles = StyleSheet.create({
 
   loginButtonContainer: {
     marginTop: 10,
-    backgroundColor: "#3897f0",
+    backgroundColor: "#9b0f0f",
     width: "100%",
-    borderRadius: 5,
+    borderRadius: 30,
   },
 
   loginButtonText: {
@@ -104,7 +117,7 @@ const styles = StyleSheet.create({
   },
 
   forgotPassword: {
-    color: "#3897f0",
+    color: "#9b0f0f",
     textAlign: "center",
     marginTop: 15,
     fontSize: 13,
@@ -116,7 +129,7 @@ const styles = StyleSheet.create({
   },
 
   signupText: {
-    color: "#3897f0",
+    color: "#9b0f0f",
     fontWeight: "600",
   },
 });

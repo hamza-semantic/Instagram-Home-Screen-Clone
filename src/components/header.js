@@ -11,12 +11,12 @@ function Header({ navigation }) {
   const [isPlusActive, setIsPlusActive] = useState(false);
   const { isDarkMode, setIsDarkMode } = useContext(ThemeContext);
 
-  useFocusEffect(
-    React.useCallback(() => {
-      setIsNotificationActive(false);
-      setIsPlusActive(false);
-    }, []),
-  );
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     setIsNotificationActive(false);
+  //     setIsPlusActive(false);
+  //   }, []),
+  // );
 
   return (
   <View style={[styles.header, { backgroundColor: isDarkMode ? '#000' : '#fff' }]}>
