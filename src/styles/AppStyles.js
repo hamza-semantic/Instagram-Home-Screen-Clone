@@ -113,26 +113,67 @@ captionText: {
   paddingBottom: 10,
 },
 
+loginContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    paddingHorizontal: 30,
+  },
 
+  loginText: {
+    fontSize: 36,
+    fontWeight: "bold",
+    marginBottom: 40,
+    color : "#9b0f0f"
+  },
 
+  formContainer: {
+    width: "100%",
+  },
 
+  input: {
+    width: "100%",
+    borderWidth: 1,
+    borderColor: "#dbdbdb",
+    borderRadius: 30,
+    padding: 10,
+    marginBottom: 12,
+    backgroundColor: "#fafafa",
+    fontSize: 14,
+  },
 
+  loginButtonContainer: {
+    marginTop: 10,
+    backgroundColor: "#9b0f0f",
+    width: "100%",
+    borderRadius: 30,
+  },
 
+  loginButtonText: {
+    color: "white",
+    padding: 12,
+    textAlign: "center",
+    fontWeight: "600",
+    fontSize: 15,
+  },
 
+  forgotPassword: {
+    color: "#9b0f0f",
+    textAlign: "center",
+    marginTop: 15,
+    fontSize: 13,
+  },
 
+  signupContainer: {
+    flexDirection: "row",
+    marginTop: 30,
+  },
 
-
-
-
-
-
-
-
-
-
-
-
-
+  signupText: {
+    color: "#9b0f0f",
+    fontWeight: "600",
+  },
 });
 
 export default styles;

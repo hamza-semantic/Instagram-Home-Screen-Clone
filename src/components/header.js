@@ -1,6 +1,5 @@
 import React, { useState, useContext } from 'react';
 import { Text, View, Image, TouchableOpacity } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
 import { ThemeContext } from '../context/ThemeContext';
 import styles from '../styles/AppStyles';
 import { Heart, Plus, Moon, Sun } from 'lucide-react-native';

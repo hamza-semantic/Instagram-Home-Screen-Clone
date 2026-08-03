@@ -1,5 +1,4 @@
 import React, { useContext } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useQuery } from '@tanstack/react-query';
 import { View, Text, Image, Pressable } from 'react-native';
 import { ThemeContext } from '../context/ThemeContext';
@@ -25,7 +24,6 @@ function ProfileScreen() {
 
   const handleLogout = async () => {
     dispatch(logout());
-    await AsyncStorage.removeItem('user');
   }
 
   return (
