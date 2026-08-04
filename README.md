@@ -1,97 +1,140 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Authentication Flow — Documentation
 
-# Getting Started
+## Overview
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+This document explains the API integration and authentication architecture implemented for the Instagram Clone React Native application. The system handles user registration, login, secure token storage, automatic token attachment, token refresh, protected API requests, and logout.
 
-## Step 1: Start Metro
+**API Used:** [Platzi Fake Store API](https://fakeapi.platzi.com/) (EscuelaJS)
+**Base URL:** `https://api.escuelajs.co/api/v1`
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+---
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+## Folder Structure
 
-```sh
-# Using npm
-npm start
-
-# OR using Yarn
-yarn start
+```
+src/
+  api/
+    apiClient.js        → Axios instance, base URL, request/response interceptors
+    refreshToken.js      → Handles calling the refresh-token endpoint
+  services/
+    authService.js       → Register, login, logout, and profile-fetching functions
+  utils/
+    tokenStorage.js       → Secure save/get/remove functions for access & refresh tokens
+  navigation/
+    AuthNavigator.js      → Stack navigator for Login/Register screens
+    AppNavigator.js        → Root navigator, switches between Auth stack and main app
+  screens/
+    LoginScreen.js
+    RegisterScreen.js
+    ProfileScreen.js
 ```
 
-## Step 2: Build and run your app
+---
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+## Architecture Summary
 
-### Android
+### 1. API Client (`api/apiClient.js`)
 
-```sh
-# Using npm
-npm run android
+A single reusable Axios instance is created with:
+- A shared `baseURL`, so individual requests only need to specify the endpoint path (e.g. `/auth/login`).
+- A default `Content-Type: application/json` header.
+- A 10-second request timeout.
 
-# OR using Yarn
-yarn android
+All API calls in the app go through this one instance, keeping configuration centralized (reusable API service layer).
+
+### 2. Secure Token Storage (`utils/tokenStorage.js`)
+
+Tokens are stored using **`react-native-encrypted-storage`**, which uses the device's native secure storage (iOS Keychain / Android Keystore) rather than plain-text storage. Four functions are exposed:
+
+- `saveTokens(accessToken, refreshToken)`
+- `getAccessToken()`
+- `getRefreshToken()`
+- `removeTokens()`
+
+### 3. Automatic Token Attachment (Request Interceptor)
+
+A request interceptor is registered on the Axios instance. Before every outgoing request, it retrieves the access token from Encrypted Storage and attaches it to the `Authorization` header as a Bearer token — automatically, without needing to repeat this logic in every API call.
+
+### 4. Unauthorized (401) Handling & Token Refresh (Response Interceptor)
+
+A response interceptor inspects every response:
+
+- If the response is successful, it passes through unchanged.
+- If the response status is `401` (token expired/invalid) and the request hasn't already been retried:
+  1. The refresh token is retrieved from storage.
+  2. If no refresh token exists, tokens are cleared and the error is returned (user will be routed to Login via Redux state).
+  3. Otherwise, a request is made to `/auth/refresh-token` (via `api/refreshToken.js`, using a plain Axios call to avoid re-triggering the interceptors) to obtain a new access/refresh token pair.
+  4. New tokens are saved, the original failed request is updated with the new access token, and automatically retried.
+  5. If the refresh call itself fails (refresh token also invalid), tokens are cleared and the user is effectively logged out.
+
+A `_retry` flag on the request config prevents infinite retry loops.
+
+### 5. Authentication Service Layer (`services/authService.js`)
+
+Exposes the following functions, each using the shared `apiClient`:
+
+| Function | Endpoint | Method |
+|---|---|---|
+| `registerUser(name, email, password)` | `/users/` | POST |
+| `loginUser(email, password)` | `/auth/login` | POST |
+| `getUserProfile()` | `/auth/profile` | GET (protected) |
+| `logoutUser()` | — (clears local tokens) | — |
+
+### 6. Navigation & Session State
+
+- `AppNavigator.js` reads `isLoggedIn` from Redux (`state.auth.isLoggedIn`).
+- If not logged in, it renders `AuthNavigator` (a stack containing Login and Register screens, allowing navigation between them).
+- If logged in, it renders the main app (Drawer/Tab navigation).
+- Logging in dispatches a Redux action to set `isLoggedIn: true`; logging out clears both the Redux state and the Encrypted Storage tokens, and the app automatically routes back to the Login screen.
+
+### 7. Error Handling & Loading States
+
+Each screen (Login, Register, Profile) tracks loading and error state locally (via `useState` or React Query's built-in `isPending` / `isLoading` / `isError`). Errors are distinguished by type:
+
+- **Network errors** (no `error.response` — request never reached the server): shown as "Network error. Please check your internet connection."
+- **Credential errors** (`401` from server): shown as "Invalid email or password."
+- **Other server errors**: shown as a generic "Something went wrong" message.
+
+---
+
+## Setup Instructions
+
+1. Install dependencies:
+   ```bash
+   npm install axios react-native-encrypted-storage
+   ```
+
+2. Ensure the following folders exist under `src/`: `api/`, `services/`, `utils/`.
+
+3. Confirm `AppNavigator.js` wraps everything in a single `NavigationContainer`, conditionally rendering `AuthNavigator` (logged out) or the main app navigator (logged in) — this is required for `navigation.navigate()` to work correctly across Login/Register.
+
+4. Run the app:
+   ```bash
+   npx react-native run-android
+   ```
+
+---
+
+## Flow Summary
+
 ```
+App start
+  → Check Redux isLoggedIn (backed by tokens saved during login)
+  → If false → AuthNavigator → Login screen
+  → If true  → Main app
 
-### iOS
+Login/Register
+  → authService calls apiClient → API
+  → On success, tokens saved via tokenStorage (Encrypted Storage)
+  → Redux isLoggedIn set to true
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+Any protected request
+  → Request Interceptor attaches access token automatically
+  → If 401 → Response Interceptor refreshes token and retries automatically
+  → If refresh fails → tokens cleared, user effectively logged out
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
+Logout
+  → tokenStorage.removeTokens() clears Encrypted Storage
+  → Redux isLoggedIn set to false
+  → App automatically routes back to Login screen
 ```
-
-Then, and every time you update your native dependencies, run:
-
-```sh
-bundle exec pod install
-```
-
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
-```
-
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
-
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
-
-## Step 3: Modify your app
-
-Now that you have successfully run the app, let's make changes!
-
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
-
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.

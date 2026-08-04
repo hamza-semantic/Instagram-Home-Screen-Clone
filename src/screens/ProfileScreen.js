@@ -1,37 +1,40 @@
 import React, { useContext } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useSelector, useDispatch } from 'react-redux';
 import { View, Text, Image, Pressable } from 'react-native';
 import { ThemeContext } from '../context/ThemeContext';
-// import { AuthContext } from '../context/AuthContext';
 import PersonalImage from "../assets/personal-profile.png";
-import { useDispatch } from 'react-redux';
 import { logout } from '../redux/authSlice';
-
+import { logoutUser } from '../services/authService';
 
 function ProfileScreen() {
   const { isDarkMode } = useContext(ThemeContext);
-  // const { logout } = useContext(AuthContext);
   const dispatch = useDispatch();
+  const token = useSelector((state) => state.auth.token);
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['userProfile'],
+    queryKey: ['userProfile', token],
     queryFn: async () => {
-      const response = await fetch('https://jsonplaceholder.typicode.com/users/1');
+      const response = await fetch('https://api.escuelajs.co/api/v1/auth/profile', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       const data = await response.json();
       return data;
     },
+    enabled: !!token,
   });
 
   const handleLogout = async () => {
+    await logoutUser();
     dispatch(logout());
-  }
+  };
 
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: isDarkMode ? '#000' : '#fff' }}>
       <Text style={{ color: isDarkMode ? '#fff' : '#000', fontWeight: "bold" }}>My Profile</Text>
 
       <Image
-        source={PersonalImage}
+        source={data?.avatar ? { uri: data.avatar } : PersonalImage}
         style={{ width: 100, height: 100, borderRadius: 50, marginTop: 10 }}
       />
 
